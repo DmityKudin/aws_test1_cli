@@ -23,8 +23,8 @@ ami_cur=($(aws ec2 describe-images --owners $ownerid --query "Images[?Name=='$n'
 ############################################
 desc=$n_$d
 if [ ${arr[1]} == 'stopped' ] && [ -z $ami_cur ]; then
-#aws ec2 create-image --instance-id ${arr[0]} --name $n --description $desc
-#aws ec2 terminate-instances --instance-ids ${arr[0]}
+aws ec2 create-image --instance-id ${arr[0]} --name $n --description $desc
+aws ec2 terminate-instances --instance-ids ${arr[0]}
 arr[1]='TERMINATED'
 echo ${terminated[*]}
 echo "Create new AMI now and terminate stopped instance"
@@ -38,10 +38,10 @@ aws ec2 describe-images --owners $ownerid --query 'Images[*].[Name, Description,
 do
 arr2=($(echo $line | tr " " "\n"))
 ami_d=($(echo ${arr2[2]} | tr "T" "\n")) #
-#ami_d=($(echo ${arr2[1]} | tr "_" "\n")) # test
+ami_d=($(echo ${arr2[1]} | tr "_" "\n")) # test
 age=$((($(date -d "$d" '+%s') - $(date -d "${ami_d[1]}" '+%s'))/86400))
 if [ $age -gt 7 ]; then
-#aws ec2 deregister-image --image-id ${ami_d[3]}
+aws ec2 deregister-image --image-id ${ami_d[3]}
 echo 1
 fi
 done
